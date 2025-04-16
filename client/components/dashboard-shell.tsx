@@ -77,6 +77,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
               Dashboard
             </Link>
           </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className={`flex items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-all ${
+                isActive("/scenarios") ? "bg-muted text-primary" : "text-muted-foreground hover:text-primary"
+              }`}
+            >
+              <Link href="/fundrequest">
+                <Calculator className="h-4 w-4" />
+                Fund Request
+              </Link>
+            </Button>
           <Button
             variant="ghost"
             size="sm"
@@ -142,20 +155,6 @@ export function DashboardShell({ children }: DashboardShellProps) {
               AI Optimization
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className={`flex items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-all ${
-              isActive("/scenarios") ? "bg-muted text-primary" : "text-muted-foreground hover:text-primary"
-            }`}
-          >
-            <Link href="/scenarios">
-              <Calculator className="h-4 w-4" />
-              Scenarios
-            </Link>
-          </Button>
-    
         </nav>
       </div>
       <div className="flex flex-1 flex-col">
