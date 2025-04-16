@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from './ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -21,7 +21,7 @@ export default function LandingPage(){
         <div className="flex text-sm gap-x-2">
           <Button className="px-2 py-2"><Link href='/Dashboard'>Dashboard</Link></Button>
           <Button className="px-2 py-2 bg-[#111c3d] text-white rounded-md">
-          <Link href='/Dashboard'>Get Started</Link>
+          <Link href='/dashboard'>Get Started</Link>
           </Button>
         </div>
       </nav>
@@ -61,7 +61,7 @@ export default function LandingPage(){
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
         >
-        <Link href='/Dashboard'>
+        <Link href='/dashboard'>
         Get Started
         </Link>
         </motion.button>
