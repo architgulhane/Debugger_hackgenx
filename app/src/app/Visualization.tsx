@@ -6,7 +6,7 @@ const Visualization = ({ navigateTo }: { navigateTo: (screen: string) => void })
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text className='text-3xl font-bold text-center'>Visualization Page</Text>
+        <Text className='text-3xl font-bold text-center '>Visualization Page</Text>
       </View>
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => navigateTo('Home')} style={styles.navItem}>
