@@ -9,10 +9,11 @@ To get started with this UI library:
 
 Make sure you have the following:
 
-```bash
 npm install
 # or
 yarn install
+
+
 2. Tailwind Setup
 Ensure your tailwind.config.js includes:
 
