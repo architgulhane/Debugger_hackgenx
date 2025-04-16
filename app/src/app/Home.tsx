@@ -3,7 +3,6 @@ import React, { useState, useMemo } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PieChart } from 'react-native-chart-kit';
 
-// Define colors for budget categories
 const CATEGORY_COLORS = {
   Education: '#22c55e',
   Healthcare: '#3b82f6',
@@ -11,7 +10,6 @@ const CATEGORY_COLORS = {
   PublicSafety: '#ef4444',
 };
 
-// Define target allocations for efficiency calculation
 const TARGET_ALLOCATIONS = {
   Education: 42.5,
   Healthcare: 32.0,
@@ -22,15 +20,13 @@ const TARGET_ALLOCATIONS = {
 const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   type CategoryKey = keyof typeof CATEGORY_COLORS;
   
-  // Budget allocation state
   const [budgetAllocation, setBudgetAllocation] = useState<Record<CategoryKey, number>>({
     Education: 40,
     Healthcare: 30,
     Infrastructure: 20,
     PublicSafety: 10,
   });
-  
-  // Calculate efficiency score based on how close we are to target allocations
+
   const efficiencyScore = useMemo(() => {
     let totalDeviation = 0;
     Object.entries(budgetAllocation).forEach(([category, value]) => {
@@ -38,12 +34,10 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
       totalDeviation += Math.abs(value - targetValue);
     });
     
-    // Higher score for lower deviation
     const score = Math.max(60, 100 - totalDeviation * 1.5);
     return score.toFixed(1);
   }, [budgetAllocation]);
 
-  // Format data for pie chart
   const chartData = useMemo(() => {
     return Object.entries(budgetAllocation).map(([category, value]) => ({
       name: category,
@@ -160,6 +154,22 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           >
             <Text style={styles.viewDetailsText}>View Detailed Analysis</Text>
             <Icon name="arrow-forward" size={16} color="#3b82f6" />
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.budgetAdjustmentLink}>
+          <Text style={styles.sectionTitle}>Need to Adjust the Budget?</Text>
+          <Text style={styles.formHelper}>Make detailed adjustments to budget allocations</Text>
+          
+          <TouchableOpacity 
+            style={styles.adjustBudgetButton}
+            onPress={() => navigateTo('Entry')}
+          >
+            <View style={styles.buttonContent}>
+              <Icon name="edit" size={20} color="#fff" />
+              <Text style={styles.adjustBudgetButtonText}>Go to Budget Adjustment</Text>
+            </View>
+            <Icon name="arrow-forward" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
         
@@ -405,6 +415,42 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginRight: 4,
   },
+  budgetAdjustmentLink: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  formHelper: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 12,
+  },
+  adjustBudgetButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  adjustBudgetButtonText: {
+    color: '#fff',
+    fontWeight: '500',
+    fontSize: 16,
+    marginLeft: 8,
+  },
   recentActivity: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -453,7 +499,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navItemActive: {
-    // Active navigation item styling
+
   },
   navText: {
     fontSize: 12,
