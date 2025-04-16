@@ -1,14 +1,25 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import "../../global.css"
-import { BarChart } from 'react-native-chart-kit'
+import React, { useState } from 'react';
+import SignIn from "../components/SIgnIn";
+import Home from './Home';
+import Visualization from './Visualization'; 
+import Ledger from './Ledger';
+import Entry from './Entry';
+import "../../global.css";
 
-const index = () => {
+export default function Index() {
+  const [currentScreen, setCurrentScreen] = useState('SignIn');
+
+  const navigateTo = (screen: string) => {
+    setCurrentScreen(screen);
+  };
+
   return (
-    <View className='flex-1 items-center bg-white'>
-      <Text className='color-red-400 font-bold text-3xl'>Budget Buddy</Text>
-    </View>
-  )
+    <>
+      {currentScreen === 'SignIn' && <SignIn navigateTo={navigateTo} />}
+      {currentScreen === 'Home' && <Home navigateTo={navigateTo} />}
+      {currentScreen === 'Visualization' && <Visualization navigateTo={navigateTo} />}
+      {currentScreen === 'Ledger' && <Ledger navigateTo={navigateTo} />} 
+      {currentScreen === 'Entry' && <Entry navigateTo={navigateTo} />} 
+    </>
+  );
 }
-
-export default index
