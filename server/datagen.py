@@ -34,11 +34,13 @@ for _ in range(1000000):
     region = random.choice(region_impacts)
     dev_index = round(random.uniform(0.3, 0.9), 2)
     prev_budget = round(random.uniform(10000, 150000), 2)
+    expected_budget = prev_budget * (1 + 0.3 * dev_index + 0.2 * priority_weights[priority])
     gdp_impact = round(random.uniform(0.5, 4.0), 2)
     alloc_budget = generate_allocated_budget(prev_budget, dev_index, priority_weights[priority], gdp_impact)
 
     rows.append([
-             ministry,    priority,   projects, region, dev_index, prev_budget, gdp_impact, alloc_budget
+        ministry, priority, projects, region, dev_index,
+        prev_budget, gdp_impact, alloc_budget
     ])
 
 
@@ -46,7 +48,7 @@ df = pd.DataFrame(rows, columns=[
     "Ministry", "Priority_Level", "Projects_Count", "Region_Impact",
     "Dev_Index", "Prev_Budget (Cr)", "GDP_Impact (%)", "Allocated_Budget (Cr)"
 ])
-df.to_csv("ministry_budget_1000k.csv", index=False)
+df.to_csv("Pministry_budget_1000k.csv", index=False)
 print("Generated ministry_budget_10k.csv with 10,000 records.")
 
 
