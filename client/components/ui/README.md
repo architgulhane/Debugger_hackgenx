@@ -17,6 +17,8 @@ This is a modular, reusable UI library built with React, TypeScript, and Tailwin
 
 ➢Each component is structured for scalability and consistency. Built-in support for animation, accessibility, and mobile responsiveness.
 
+
+
 How to Use
 
 1.Installation
