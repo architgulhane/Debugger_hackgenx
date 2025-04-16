@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -33,20 +33,26 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      className="flex-1 bg-slate-50"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.headerContainer}>
+      <ScrollView 
+        className="flex-grow"
+        contentContainerStyle={{
+          justifyContent: 'center',
+          padding: 20
+        }}
+      >
+        <View className="items-center mb-8">
           <Icon name="account-balance-wallet" size={50} color="#3b82f6" />
-          <Text style={styles.headerText}>Budget Buddy</Text>
-          <Text style={styles.subHeaderText}>Sign in to your account</Text>
+          <Text className="text-3xl font-bold text-slate-800 mt-2">Budget Buddy</Text>
+          <Text className="text-base text-slate-500 mt-1">Sign in to your account</Text>
         </View>
 
-        <View style={styles.formContainer}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
+        <View className="bg-white rounded-xl p-5 shadow">
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-slate-700 mb-1.5">Username</Text>
             <TextInput
-              style={styles.input}
+              className="border border-slate-200 rounded-lg p-3 text-base bg-slate-50"
               placeholder="Enter your username"
               value={username}
               onChangeText={setUsername}
@@ -54,10 +60,10 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             />
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-slate-700 mb-1.5">Password</Text>
             <TextInput
-              style={styles.input}
+              className="border border-slate-200 rounded-lg p-3 text-base bg-slate-50"
               placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
@@ -65,13 +71,13 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             />
           </View>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Account Type</Text>
-            <View style={styles.pickerContainer}>
+          <View className="mb-4">
+            <Text className="text-sm font-medium text-slate-700 mb-1.5">Account Type</Text>
+            <View className="border border-slate-200 rounded-lg bg-slate-50">
               <Picker
                 selectedValue={userType}
                 onValueChange={(itemValue) => setUserType(itemValue)}
-                style={styles.picker}
+                className="h-12"
               >
                 <Picker.Item label="User" value="user" />
                 <Picker.Item label="Admin" value="admin" />
@@ -79,14 +85,17 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
+          <TouchableOpacity 
+            className="bg-blue-500 rounded-lg p-4 items-center mt-2.5"
+            onPress={handleSignIn}
+          >
+            <Text className="text-white text-base font-semibold">Sign In</Text>
           </TouchableOpacity>
 
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Don't have an account? </Text>
+          <View className="flex-row justify-center mt-5">
+            <Text className="text-slate-500">Don't have an account? </Text>
             <TouchableOpacity onPress={() => navigateTo('Register')}>
-              <Text style={styles.registerLink}>Register</Text>
+              <Text className="text-blue-500 font-semibold">Register</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -94,92 +103,5 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f7fa',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 20,
-  },
-  headerContainer: {
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  headerText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#1e293b',
-    marginTop: 10,
-  },
-  subHeaderText: {
-    fontSize: 16,
-    color: '#64748b',
-    marginTop: 5,
-  },
-  formContainer: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#4b5563',
-    marginBottom: 6,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#f8fafc',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 8,
-    backgroundColor: '#f8fafc',
-  },
-  picker: {
-    height: 50,
-  },
-  button: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  registerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  registerText: {
-    color: '#64748b',
-  },
-  registerLink: {
-    color: '#3b82f6',
-    fontWeight: '600',
-  },
-});
 
 export default SignIn;

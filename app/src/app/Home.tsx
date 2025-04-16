@@ -1,9 +1,7 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
-import React, { useState, useMemo, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useMemo } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PieChart } from 'react-native-chart-kit';
-import { db, firebaseConfig } from '../firebase/config';
-import { addDoc, collection } from 'firebase/firestore';
 
 const CATEGORY_COLORS = {
   Education: '#22c55e',
@@ -29,54 +27,6 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     PublicSafety: 10,
   });
   
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-
-  const saveToFirebase = async () => {
-    try {
-      // Check if Firebase is properly configured first
-      if (!db || firebaseConfig.projectId === "YOUR_PROJECT_ID") {
-        console.warn('Firebase not properly configured. Cannot save budget data.');
-        return false;
-      }
-      
-      // If Firebase is configured, proceed with Firestore save
-      const budgetCollectionRef = collection(db, 'budgets');
-      const docRef = await addDoc(budgetCollectionRef, {
-        ...budgetAllocation,
-        timestamp: new Date()
-      });
-      
-      console.log('Budget data saved to Firebase with ID:', docRef.id);
-      return true;
-    } catch (error) {
-      // More detailed error logging
-      console.error('Error saving budget data to Firebase:', error);
-      if (error instanceof Error) {
-        console.error('Error details:', error.message);
-        
-        // Check for specific Firebase errors
-        if (error.message.includes('permission-denied')) {
-          console.error('Firebase permission denied. Check your security rules.');
-        } else if (error.message.includes('unavailable')) {
-          console.error('Firebase service unavailable. Network issue or service down.');
-        } else if (error.message.includes('unauthenticated')) {
-          console.error('Firebase authentication required.');
-        }
-      }
-      return false;
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      saveToFirebase();
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [budgetAllocation]);
-
   const efficiencyScore = useMemo(() => {
     let totalDeviation = 0;
     Object.entries(budgetAllocation).forEach(([category, value]) => {

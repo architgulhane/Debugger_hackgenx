@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -51,32 +51,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     });
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     console.log('Form submitted:', formData);
-    
-    try {
-      // Post form data to the specified endpoint
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.insertBudget}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Budget data posted successfully:', data);
-      
-      alert('Budget form submitted successfully!');
-      navigateTo('Home');
-    } catch (error) {
-      console.error('Error posting budget allocation data:', error);
-      alert('Error submitting budget form. Please try again.');
-    }
+    alert('Budget form submitted successfully!');
+    navigateTo('Home');
   };
 
   const openDropdown = (name: string, options: string[]) => {
@@ -101,13 +79,13 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     options: string[] 
   }) => {
     return (
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>{label}</Text>
+      <View className="mb-5">
+        <Text className="text-sm font-medium text-slate-800 mb-2">{label}</Text>
         <TouchableOpacity 
-          style={styles.dropdownSelector} 
+          className="bg-white border border-slate-300 rounded-lg p-3 flex-row justify-between items-center"
           onPress={() => openDropdown(name, options)}
         >
-          <Text style={styles.dropdownText}>{value}</Text>
+          <Text className="text-base text-slate-800">{value}</Text>
           <Icon name="arrow-drop-down" size={24} color="#64748b" />
         </TouchableOpacity>
       </View>
@@ -115,11 +93,11 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.content}>
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Budget Allocation Form</Text>
-          <Text style={styles.formSubtitle}>Fill in the details for budget allocation</Text>
+    <View className="flex-1 bg-slate-50 justify-between">
+      <ScrollView className="flex-1">
+        <View className="p-5">
+          <Text className="text-2xl font-bold text-slate-800 mb-2 text-center">Budget Buddy</Text>
+          <Text className="text-base text-slate-500 mb-6 text-center">Fill in the details for budget allocation</Text>
 
           {/* Ministry Dropdown */}
           <CustomDropdown
@@ -138,10 +116,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           />
 
           {/* Projects Count Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Number of Projects</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Number of Projects</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Projects_Count}
               onChangeText={(value) => handleChange('Projects_Count', value)}
               keyboardType="numeric"
@@ -158,10 +136,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           />
 
           {/* Development Index Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Development Index (0-1)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Development Index (0-1)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Dev_Index}
               onChangeText={(value) => handleChange('Dev_Index', value)}
               keyboardType="decimal-pad"
@@ -170,10 +148,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* Expected Budget Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Expected Budget (Cr)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Expected Budget (Cr)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.expected_budget}
               onChangeText={(value) => handleChange('expected_budget', value)}
               keyboardType="numeric"
@@ -182,10 +160,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* Previous Budget Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Previous Budget (Cr)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Previous Budget (Cr)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Prev_Budget}
               onChangeText={(value) => handleChange('Prev_Budget', value)}
               keyboardType="numeric"
@@ -194,10 +172,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* GDP Impact Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>GDP Impact (%)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">GDP Impact (%)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.GDP_Impact}
               onChangeText={(value) => handleChange('GDP_Impact', value)}
               keyboardType="decimal-pad"
@@ -207,10 +185,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
 
           {/* Submit Button */}
           <TouchableOpacity
-            style={styles.submitButton}
+            className="bg-blue-500 rounded-lg p-4 items-center mt-3"
             onPress={handleSubmit}
           >
-            <Text style={styles.submitButtonText}>Submit Budget Request</Text>
+            <Text className="text-white text-base font-semibold">Submit Budget Request</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -222,10 +200,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select {currentDropdown.name.replace('_', ' ')}</Text>
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-2xl pb-5 max-h-[70%]">
+            <View className="flex-row justify-between items-center p-4 border-b border-slate-200">
+              <Text className="text-lg font-semibold text-slate-800">Select {currentDropdown.name.replace('_', ' ')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Icon name="close" size={24} color="#64748b" />
               </TouchableOpacity>
@@ -235,10 +213,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.dropdownItem}
+                  className="flex-row justify-between items-center p-4 border-b border-slate-200"
                   onPress={() => selectItem(item)}
                 >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
+                  <Text className="text-base text-slate-800">{item}</Text>
                   {formData[currentDropdown.name as keyof typeof formData] === item && (
                     <Icon name="check" size={20} color="#3b82f6" />
                   )}
@@ -249,173 +227,41 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
         </View>
       </Modal>
       
-      <View style={styles.navBar}>
+      <View className="flex-row justify-around items-center p-3 border-t border-slate-200 bg-white">
         <TouchableOpacity 
-          style={styles.navItem} 
+          className="items-center" 
           onPress={() => navigateTo('Home')}
         >
-          <Icon name="dashboard" size={24} color="#666" />
-          <Text style={styles.navText}>Dashboard</Text>
+          <Icon name="dashboard" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Dashboard</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.navItem} 
+          className="items-center" 
           onPress={() => navigateTo('Visualization')}
         >
-          <Icon name="bar-chart" size={24} color="#666" />
-          <Text style={styles.navText}>Analysis</Text>
+          <Icon name="bar-chart" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Analysis</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.navItem} 
+          className="items-center" 
           onPress={() => navigateTo('Ledger')}
         >
-          <Icon name="book" size={24} color="#666" />
-          <Text style={styles.navText}>Ledger</Text>
+          <Icon name="book" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Ledger</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={[styles.navItem, styles.navItemActive]} 
+          className="items-center" 
           onPress={() => {}}
         >
           <Icon name="edit" size={24} color="#3b82f6" />
-          <Text style={[styles.navText, styles.navTextActive]}>Adjust</Text>
+          <Text className="text-xs mt-1 text-blue-500 font-medium">Adjust</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f7fa',
-    justifyContent: 'space-between',
-  },
-  content: {
-    flex: 1,
-  },
-  formContainer: {
-    padding: 20,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a2b4b',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  formSubtitle: {
-    fontSize: 16,
-    color: '#64748b',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1a2b4b',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  dropdownSelector: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 8,
-    padding: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dropdownText: {
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingBottom: 20,
-    maxHeight: '70%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a2b4b',
-  },
-  dropdownItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  submitButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#fff',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navItemActive: {
-    
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 4,
-    color: '#64748b',
-  },
-  navTextActive: {
-    color: '#3b82f6',
-    fontWeight: '500',
-  },
-});
 
 export default Entry;
