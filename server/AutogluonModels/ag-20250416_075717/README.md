@@ -26,3 +26,36 @@ This directory contains the full saved state of a trained **AutoGluon machine le
 ```python
 from autogluon.tabular import TabularPredictor
 predictor = TabularPredictor.load("AutogluonModels/ag-20250416_075717")
+
+📦 learner.pkl
+Stores learner-specific information used during training.
+
+AutoGluon uses this internally; not typically needed for predictions.
+
+📄 metadata.json
+Contains metadata about the training process:
+
+Dataset used
+
+Problem type (e.g., regression or classification)
+
+Features and labels
+
+Training time and environment
+
+📄 version.txt
+AutoGluon version used to train the model.
+
+Important for compatibility when reloading or deploying the model.
+
+🚀 How to Use This Model
+python
+Copy
+Edit
+from autogluon.tabular import TabularPredictor
+
+# Load the trained model
+predictor = TabularPredictor.load("AutogluonModels/ag-20250416_075717")
+
+# Predict on new data
+predictions = predictor.predict(new_data_df)
