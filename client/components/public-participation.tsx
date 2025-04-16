@@ -97,7 +97,16 @@ const sentimentData = [
 ]
 
 // Common concerns data (for word cloud)
-const commonConcerns = [
+interface Word {
+  text: string;
+  value: number;
+  sector: string;
+  x?: number;
+  y?: number;
+  fontSize?: number;
+}
+
+const commonConcerns: Word[] = [
   { text: "School Funding", value: 100, sector: "Education" },
   { text: "Road Repairs", value: 85, sector: "Infrastructure" },
   { text: "Healthcare Access", value: 95, sector: "Healthcare" },
@@ -114,6 +123,8 @@ const commonConcerns = [
   { text: "Water Quality", value: 65, sector: "Environment" },
   { text: "Senior Services", value: 60, sector: "Social Services" },
 ]
+
+const MAX_FEEDBACK_LENGTH = 500;
 
 export function PublicParticipation() {
   const [activeTab, setActiveTab] = useState("feedback")
@@ -217,6 +228,19 @@ export function PublicParticipation() {
     )
   }
 
+  const handleEditFeedback = (feedbackId: number) => {
+    const feedbackToEdit = feedbacks.find((feedback) => feedback.id === feedbackId);
+    if (feedbackToEdit) {
+      setFeedbackText(feedbackToEdit.comment);
+      setSelectedSector(feedbackToEdit.sector);
+      setFeedbacks(feedbacks.filter((feedback) => feedback.id !== feedbackId));
+    }
+  };
+
+  const handleDeleteFeedback = (feedbackId: number) => {
+    setFeedbacks(feedbacks.filter((feedback) => feedback.id !== feedbackId));
+  };
+
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -260,7 +284,11 @@ export function PublicParticipation() {
                     className="min-h-[100px]"
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
+                    maxLength={MAX_FEEDBACK_LENGTH}
                   />
+                  <div className="text-xs text-muted-foreground">
+                    {feedbackText.length}/{MAX_FEEDBACK_LENGTH} characters
+                  </div>
                 </div>
 
                 {feedbackSubmitted ? (
@@ -340,10 +368,24 @@ export function PublicParticipation() {
                           <ThumbsDown className="h-4 w-4" />
                         </Button>
                       </div>
-                      <Button variant="ghost" size="sm" className="h-8">
-                        <MessageSquare className="h-4 w-4 mr-1" />
-                        <span className="text-xs">Reply</span>
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8"
+                          onClick={() => handleEditFeedback(feedback.id)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8"
+                          onClick={() => handleDeleteFeedback(feedback.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -834,10 +876,6 @@ export function PublicParticipation() {
                 <div className="space-y-2">
                   {["School Funding", "Healthcare Access", "Road Repairs"].map((topic, index) => (
                     <div key={index} className="flex items-center justify-between p-2 border rounded-md">
-                      <span className="text-sm">{topic}</span>
-                      <Badge variant="outline" className="bg-blue-100 text-blue-800">
-                        Trending
-                      </Badge>
                     </div>
                   ))}
                 </div>
@@ -847,5 +885,5 @@ export function PublicParticipation() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
