@@ -254,11 +254,9 @@ export function AdminPanel() {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="sectors">Sector Management</TabsTrigger>
           <TabsTrigger value="users">User Management</TabsTrigger>
-          <TabsTrigger value="feedback">Feedback Moderation</TabsTrigger>
-          <TabsTrigger value="ai">AI Controls</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sectors" className="mt-6">
@@ -269,10 +267,6 @@ export function AdminPanel() {
                   <CardTitle>Sector & Budget Management</CardTitle>
                   <CardDescription>Add, edit, or remove budget sectors</CardDescription>
                 </div>
-                <Button onClick={() => setShowAddSector(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Sector
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -471,10 +465,6 @@ export function AdminPanel() {
                   <CardTitle>User Management</CardTitle>
                   <CardDescription>Manage user accounts and permissions</CardDescription>
                 </div>
-                <Button onClick={() => setShowAddUser(true)}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add User
-                </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -526,7 +516,6 @@ export function AdminPanel() {
           <Dialog open={showAddUser} onOpenChange={setShowAddUser}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New User</DialogTitle>
                 <DialogDescription>
                   Create a new user account with appropriate permissions
                 </DialogDescription>
@@ -583,7 +572,6 @@ export function AdminPanel() {
               
               <DialogFooter>
                 <Button variant="outline" onClick={() => setShowAddUser(false)}>Cancel</Button>
-                <Button onClick={addNewUser}>Add User</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
