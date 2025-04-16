@@ -121,6 +121,19 @@ export function DashboardShell({ children }: DashboardShellProps) {
             size="sm"
             asChild
             className={`flex items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-all ${
+              isActive("/transparency") ? "bg-muted text-primary" : "text-muted-foreground hover:text-primary"
+            }`}
+          >
+            <Link href="/transparency">
+              <IndianRupee className="h-4 w-4" />
+              Transparency
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className={`flex items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-all ${
               isActive("/optimization") ? "bg-muted text-primary" : "text-muted-foreground hover:text-primary"
             }`}
           >
@@ -142,19 +155,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               Scenarios
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            asChild
-            className={`flex items-center justify-start gap-2 rounded-lg px-2 py-1.5 transition-all ${
-              isActive("/transparency") ? "bg-muted text-primary" : "text-muted-foreground hover:text-primary"
-            }`}
-          >
-            <Link href="/transparency">
-              <IndianRupee className="h-4 w-4" />
-              Transparency
-            </Link>
-          </Button>
+    
         </nav>
       </div>
       <div className="flex flex-1 flex-col">

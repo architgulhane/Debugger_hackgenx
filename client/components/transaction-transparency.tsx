@@ -164,16 +164,6 @@ export function TransactionTransparency() {
               <CardTitle>Transaction Ledger</CardTitle>
               <CardDescription>Transparent record of all budget transactions</CardDescription>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm">
-                <FileText className="mr-2 h-4 w-4" />
-                Export CSV
-              </Button>
-              <Button variant="outline" size="sm">
-                <Link2 className="mr-2 h-4 w-4" />
-                Blockchain Explorer
-              </Button>
-            </div>
           </div>
         </CardHeader>
         <CardContent>

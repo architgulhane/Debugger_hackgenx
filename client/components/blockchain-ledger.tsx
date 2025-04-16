@@ -232,10 +232,8 @@ export function BlockchainLedger() {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 w-full">
+        <TabsList className="grid grid-cols-1 w-full">
           <TabsTrigger value="transactions">Transaction Ledger</TabsTrigger>
-          <TabsTrigger value="audit">Audit Trail</TabsTrigger>
-          <TabsTrigger value="verification">Blockchain Verification</TabsTrigger>
         </TabsList>
 
         <TabsContent value="transactions" className="mt-6">
@@ -245,16 +243,6 @@ export function BlockchainLedger() {
                 <div>
                   <CardTitle>Transaction Ledger</CardTitle>
                   <CardDescription>Transparent record of all budget transactions</CardDescription>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm">
-                    <FileText className="mr-2 h-4 w-4" />
-                    Export CSV
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <Link2 className="mr-2 h-4 w-4" />
-                    Blockchain Explorer
-                  </Button>
                 </div>
               </div>
             </CardHeader>
