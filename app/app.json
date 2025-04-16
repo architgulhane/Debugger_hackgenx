@@ -10,6 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "com.anonymous.myapp",
       "supportsTablet": true
     },
     "android": {
@@ -17,7 +18,8 @@
         "googleServicesFile": "./google-services.json",
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.myapp"
     },
     "web": {
       "bundler": "metro",
@@ -26,7 +28,9 @@
     },
     "plugins": [
       "expo-router",
-      ["@react-native-google-signin/google-signin"],
+      [
+        "@react-native-google-signin/google-signin"
+      ],
       [
         "expo-splash-screen",
         {
