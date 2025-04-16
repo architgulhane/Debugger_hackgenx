@@ -14,9 +14,16 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
+// Check if Firebase config is using placeholder values
+if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+  console.warn(
+    "⚠️ Using placeholder Firebase configuration. Please replace with your actual Firebase config in src/firebase/config.ts"
+  );
+}
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, db };
+export { auth, db, firebaseConfig };

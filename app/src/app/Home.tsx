@@ -2,6 +2,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform }
 import React, { useState, useMemo, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PieChart } from 'react-native-chart-kit';
+import { db, firebaseConfig } from '../firebase/config';
+import { addDoc, collection } from 'firebase/firestore';
 
 const CATEGORY_COLORS = {
   Education: '#22c55e',
@@ -17,21 +19,6 @@ const TARGET_ALLOCATIONS = {
   PublicSafety: 8.0,
 };
 
-// API configuration - allows for different environments
-const API_CONFIG = {
-  // Use appropriate IP for development devices
-  // For Android emulator, 10.0.2.2 points to host machine's localhost
-  // For iOS simulator, localhost works
-  baseUrl: Platform.select({
-    ios: 'http://localhost:5001',
-    android: 'http://10.0.2.2:5001',
-    default: 'http://localhost:5001'
-  }),
-  endpoints: {
-    insertBudget: '/insert'
-  }
-};
-
 const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   type CategoryKey = keyof typeof CATEGORY_COLORS;
   
@@ -44,59 +31,48 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  const postBudgetData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
+  const saveToFirebase = async () => {
     try {
-      const apiUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.insertBudget}`;
-      console.log(`Posting budget data to: ${apiUrl}`);
+      // Check if Firebase is properly configured first
+      if (!db || firebaseConfig.projectId === "YOUR_PROJECT_ID") {
+        console.warn('Firebase not properly configured. Cannot save budget data.');
+        return false;
+      }
       
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(budgetAllocation),
+      // If Firebase is configured, proceed with Firestore save
+      const budgetCollectionRef = collection(db, 'budgets');
+      const docRef = await addDoc(budgetCollectionRef, {
+        ...budgetAllocation,
+        timestamp: new Date()
       });
       
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Budget data posted successfully:', data);
-      return data;
+      console.log('Budget data saved to Firebase with ID:', docRef.id);
+      return true;
     } catch (error) {
       // More detailed error logging
-      console.error('Error posting budget allocation data:', error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Unknown error occurred';
-      
-      setError(errorMessage);
-      
-      // Only show alert for actual API errors, not initial load
-      if (error instanceof Error && error.message !== 'Network request failed') {
-        Alert.alert(
-          'Error',
-          `Failed to save budget allocation data: ${errorMessage}`,
-          [{ text: 'OK' }]
-        );
-      } else {
-        console.warn('Network connection issue - operating in offline mode');
+      console.error('Error saving budget data to Firebase:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message);
+        
+        // Check for specific Firebase errors
+        if (error.message.includes('permission-denied')) {
+          console.error('Firebase permission denied. Check your security rules.');
+        } else if (error.message.includes('unavailable')) {
+          console.error('Firebase service unavailable. Network issue or service down.');
+        } else if (error.message.includes('unauthenticated')) {
+          console.error('Firebase authentication required.');
+        }
       }
-    } finally {
-      setIsLoading(false);
+      return false;
     }
   };
 
   useEffect(() => {
-    // Don't make API call on first render - wait for user interaction
     const timer = setTimeout(() => {
-      postBudgetData();
-    }, 1000); // Delay first API call by 1 second
+      saveToFirebase();
+    }, 1000);
     
     return () => clearTimeout(timer);
   }, [budgetAllocation]);
