@@ -128,7 +128,7 @@ export function FeedbackForm() {
         {/* Satisfaction */}
         <div className="space-y-2">
           <Label>Satisfaction Level</Label>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between bg-gray-100 p-4 rounded-lg">
             {[1, 2, 3, 4, 5].map((num) => (
               <div key={num} className="flex flex-col items-center">
                 <input
@@ -138,17 +138,17 @@ export function FeedbackForm() {
                   name="satisfaction"
                   checked={formData.satisfaction === num.toString()}
                   onChange={() => handleChange("satisfaction", num.toString())}
-                  className="h-4 w-4 border-gray-300 text-primary focus:ring-primary"
+                  className="h-5 w-5 border-gray-300 text-primary focus:ring-primary cursor-pointer"
                 />
-                <Label htmlFor={`rating-${num}`} className="mt-1">
+                <Label htmlFor={`rating-${num}`} className="mt-1 text-sm font-medium text-gray-700">
                   {num}
                 </Label>
               </div>
             ))}
           </div>
-          <div className="flex justify-between text-xs text-gray-500">
-            <span>Not satisfied</span>
-            <span>Very satisfied</span>
+          <div className="flex justify-between text-xs text-gray-500 mt-2">
+            <span className="italic">Not satisfied</span>
+            <span className="italic">Very satisfied</span>
           </div>
         </div>
 
