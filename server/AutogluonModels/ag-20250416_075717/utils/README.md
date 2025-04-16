@@ -81,3 +81,7 @@ predictor = TabularPredictor.load('attr/LightGBM')
 
 # Predict using the loaded model
 predictions = predictor.predict(X_train)
+
+
+**📌 Summary**
+This folder contains utility files necessary for model training and prediction. It includes model attributes (attr/) used for different machine learning algorithms and data files (data/) used for training and validation. These files are essential to the functionality of your Smart Budget Allocation System and related tasks. Ensure that all the files are correctly loaded before performing any prediction or model evaluation.
