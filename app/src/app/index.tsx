@@ -1,13 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import Test from '../components/Test'
 import "../../global.css"
+import { BarChart } from 'react-native-chart-kit'
 
 const index = () => {
   return (
-    <View>
-      <Text className='color-red-400'>Test</Text>
-      <Test/> 
+    <View className='flex-1 items-center bg-white'>
+      <Text className='color-red-400 font-bold text-3xl'>Budget Buddy</Text>
     </View>
   )
 }
