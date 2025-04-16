@@ -14,8 +14,8 @@ export default function LandingPage(){
       <div className="flex md:flex-row flex-col items-center justify-center">
           <Image
           className='rounded-full'
-          width={50}
-          height={50}
+          width={40}
+          height={40}
            src={'/images/logo.png'} alt={'main-logo'}/>
         </div>
         <div className="flex text-sm gap-x-2">
@@ -94,8 +94,8 @@ export default function LandingPage(){
               <p className="text-2xl font-bold">₹240000</p>
             </div>
             <div className="bg-white p-4 rounded-lg shadow">
-              <h4 className="text-gray-600">No. Of Sites</h4>
-              <p className="text-2xl font-bold">4</p>
+              <h4 className="text-gray-600">No of Budgets</h4>
+              <p className="text-2xl font-bold">20</p>
             </div>
           </div>
         </div>
