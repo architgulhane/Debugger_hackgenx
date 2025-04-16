@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList, Alert } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -15,12 +15,23 @@ const MINISTRY_OPTIONS = [
   'Commerce'
 ];
 
+const API_CONFIG = {
+  baseUrl: Platform.select({
+    ios: 'http://localhost:5001',
+    android: 'http://172.26.25.107:5001',
+    default: 'http://localhost:5001'
+  }),
+  endpoints: {
+    insertBudget: '/insert'
+  }
+};
+
 const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   const [formData, setFormData] = useState({
     Ministry: 'Defence',
-    Priority_Level: 'low',
+    Priority_Level: 'Low',
     Projects_Count: '15',
-    Region_Impact: 'national',
+    Region_Impact: 'National',
     Dev_Index: '0.45',
     expected_budget: '200',
     Prev_Budget: '52000',
@@ -40,10 +51,32 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Form submitted:', formData);
-    alert('Budget form submitted successfully!');
-    navigateTo('Home');
+    
+    try {
+      // Post form data to the specified endpoint
+      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.insertBudget}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Budget data posted successfully:', data);
+      
+      alert('Budget form submitted successfully!');
+      navigateTo('Home');
+    } catch (error) {
+      console.error('Error posting budget allocation data:', error);
+      alert('Error submitting budget form. Please try again.');
+    }
   };
 
   const openDropdown = (name: string, options: string[]) => {
@@ -217,21 +250,36 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
       </Modal>
       
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigateTo('Home')} style={styles.navItem}>
-          <Icon name="home" size={24} color="#000" />
-          <Text style={styles.navText}>Home</Text>
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Home')}
+        >
+          <Icon name="dashboard" size={24} color="#666" />
+          <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Visualization')} style={styles.navItem}>
-          <Icon name="bar-chart" size={24} color="#000" />
-          <Text style={styles.navText}>Visualization</Text>
+        
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Visualization')}
+        >
+          <Icon name="bar-chart" size={24} color="#666" />
+          <Text style={styles.navText}>Analysis</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Ledger')} style={styles.navItem}>
-          <Icon name="book" size={24} color="#000" />
+        
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Ledger')}
+        >
+          <Icon name="book" size={24} color="#666" />
           <Text style={styles.navText}>Ledger</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
+        
+        <TouchableOpacity 
+          style={[styles.navItem, styles.navItemActive]} 
+          onPress={() => {}}
+        >
           <Icon name="edit" size={24} color="#3b82f6" />
-          <Text style={[styles.navText, styles.navTextActive]}>Entry</Text>
+          <Text style={[styles.navText, styles.navTextActive]}>Adjust</Text>
         </TouchableOpacity>
       </View>
     </View>

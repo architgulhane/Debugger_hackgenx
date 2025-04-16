@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import React, { useState, useMemo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
+import React, { useState, useMemo, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { PieChart } from 'react-native-chart-kit';
 
@@ -17,6 +17,21 @@ const TARGET_ALLOCATIONS = {
   PublicSafety: 8.0,
 };
 
+// API configuration - allows for different environments
+const API_CONFIG = {
+  // Use appropriate IP for development devices
+  // For Android emulator, 10.0.2.2 points to host machine's localhost
+  // For iOS simulator, localhost works
+  baseUrl: Platform.select({
+    ios: 'http://localhost:5001',
+    android: 'http://10.0.2.2:5001',
+    default: 'http://localhost:5001'
+  }),
+  endpoints: {
+    insertBudget: '/insert'
+  }
+};
+
 const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   type CategoryKey = keyof typeof CATEGORY_COLORS;
   
@@ -26,6 +41,65 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     Infrastructure: 20,
     PublicSafety: 10,
   });
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const postBudgetData = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const apiUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.insertBudget}`;
+      console.log(`Posting budget data to: ${apiUrl}`);
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(budgetAllocation),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Budget data posted successfully:', data);
+      return data;
+    } catch (error) {
+      // More detailed error logging
+      console.error('Error posting budget allocation data:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Unknown error occurred';
+      
+      setError(errorMessage);
+      
+      // Only show alert for actual API errors, not initial load
+      if (error instanceof Error && error.message !== 'Network request failed') {
+        Alert.alert(
+          'Error',
+          `Failed to save budget allocation data: ${errorMessage}`,
+          [{ text: 'OK' }]
+        );
+      } else {
+        console.warn('Network connection issue - operating in offline mode');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Don't make API call on first render - wait for user interaction
+    const timer = setTimeout(() => {
+      postBudgetData();
+    }, 1000); // Delay first API call by 1 second
+    
+    return () => clearTimeout(timer);
+  }, [budgetAllocation]);
 
   const efficiencyScore = useMemo(() => {
     let totalDeviation = 0;
@@ -50,6 +124,17 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Budget Dashboard</Text>
+        <TouchableOpacity 
+          style={styles.logoutButton}
+          onPress={() => navigateTo('SignIn')}
+        >
+          <Icon name="logout" size={20} color="#fff" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+      
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Budget Dashboard</Text>
         
@@ -167,7 +252,7 @@ const Home = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           >
             <View style={styles.buttonContent}>
               <Icon name="edit" size={20} color="#fff" />
-              <Text style={styles.adjustBudgetButtonText}>Go to Budget Adjustment</Text>
+              <Text style={styles.adjustBudgetButtonText}>Go to Budget Allocation</Text>
             </View>
             <Icon name="arrow-forward" size={20} color="#fff" />
           </TouchableOpacity>
@@ -260,6 +345,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f7fa',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#1e293b',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  logoutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#334155',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+  },
+  logoutText: {
+    color: '#ffffff',
+    marginLeft: 4,
+    fontSize: 14,
   },
   content: {
     flex: 1,

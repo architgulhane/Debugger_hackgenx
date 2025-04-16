@@ -1,33 +1,26 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Platform, KeyboardAvoidingView } from 'react-native';
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
-  const [username, setUsername] = useState('');
+const Register = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
   const [userType, setUserType] = useState('user');
 
-  const handleSignIn = () => {
-    if (!username || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+  const handleRegister = () => {
+    if (!email || !password || !confirmPassword || !name) {
+      alert('Please fill in all fields');
       return;
     }
     
-    // Hard-coded user validation
-    if (userType === 'admin') {
-      if (username === 'admin' && password === '1234') {
-        navigateTo('AdminHome');
-      } else {
-        Alert.alert('Error', 'Invalid admin credentials');
-      }
-    } else {
-      if (username === 'user' && password === '1234') {
-        navigateTo('Home');
-      } else {
-        Alert.alert('Error', 'Invalid user credentials');
-      }
+    if (password !== confirmPassword) {
+      alert('Passwords do not match');
+      return;
     }
+    navigateTo('SignIn');
   };
 
   return (
@@ -37,19 +30,30 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.headerContainer}>
-          <Icon name="account-balance-wallet" size={50} color="#3b82f6" />
-          <Text style={styles.headerText}>Budget Buddy</Text>
-          <Text style={styles.subHeaderText}>Sign in to your account</Text>
+          <Icon name="app-registration" size={50} color="#3b82f6" />
+          <Text style={styles.headerText}>Budget Tracker</Text>
+          <Text style={styles.subHeaderText}>Create your account</Text>
         </View>
 
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
+            <Text style={styles.label}>Full Name</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter your username"
-              value={username}
-              onChangeText={setUsername}
+              placeholder="Enter your full name"
+              value={name}
+              onChangeText={setName}
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
               autoCapitalize="none"
             />
           </View>
@@ -58,9 +62,20 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             <Text style={styles.label}>Password</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter your password"
+              placeholder="Create a password"
               value={password}
               onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Confirm Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
               secureTextEntry
             />
           </View>
@@ -79,14 +94,14 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-            <Text style={styles.buttonText}>Sign In</Text>
+          <TouchableOpacity style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Register</Text>
           </TouchableOpacity>
 
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>Don't have an account? </Text>
-            <TouchableOpacity onPress={() => navigateTo('Register')}>
-              <Text style={styles.registerLink}>Register</Text>
+          <View style={styles.loginContainer}>
+            <Text style={styles.loginText}>Already have an account? </Text>
+            <TouchableOpacity onPress={() => navigateTo('SignIn')}>
+              <Text style={styles.loginLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -168,18 +183,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  registerContainer: {
+  loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
-  registerText: {
+  loginText: {
     color: '#64748b',
   },
-  registerLink: {
+  loginLink: {
     color: '#3b82f6',
     fontWeight: '600',
   },
 });
 
-export default SignIn;
+export default Register;

@@ -9,17 +9,36 @@ const Visualization = ({ navigateTo }: { navigateTo: (screen: string) => void })
         <Text className='text-3xl font-bold text-center '>Visualization Page</Text>
       </View>
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigateTo('Home')} style={styles.navItem}>
-          <Icon name="home" size={24} color="#000" />
-          <Text style={styles.navText}>Home</Text>
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Home')}
+        >
+          <Icon name="dashboard" size={24} color="#666" />
+          <Text style={styles.navText}>Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Ledger')} style={styles.navItem}>
-          <Icon name="book" size={24} color="#000" />
+        
+        <TouchableOpacity 
+          style={[styles.navItem, styles.navItemActive]} 
+          onPress={() => {}}
+        >
+          <Icon name="bar-chart" size={24} color="#3b82f6" />
+          <Text style={[styles.navText, styles.navTextActive]}>Analysis</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Ledger')}
+        >
+          <Icon name="book" size={24} color="#666" />
           <Text style={styles.navText}>Ledger</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Entry')} style={styles.navItem}>
-          <Icon name="edit" size={24} color="#000" />
-          <Text style={styles.navText}>Entry</Text>
+        
+        <TouchableOpacity 
+          style={styles.navItem} 
+          onPress={() => navigateTo('Entry')}
+        >
+          <Icon name="edit" size={24} color="#666" />
+          <Text style={styles.navText}>Adjust</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -30,6 +49,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: '#f5f7fa',
   },
   content: {
     flex: 1,
@@ -42,16 +62,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     borderTopWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#f8f8f8',
+    borderColor: '#e2e8f0',
+    backgroundColor: '#fff',
   },
   navItem: {
     alignItems: 'center',
   },
+  navItemActive: {
+    
+  },
   navText: {
     fontSize: 12,
     marginTop: 4,
-    color: '#000',
+    color: '#64748b',
+  },
+  navTextActive: {
+    color: '#3b82f6',
+    fontWeight: '500',
   },
 });
 
