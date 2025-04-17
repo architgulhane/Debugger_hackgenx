@@ -1,4 +1,4 @@
-# 🧠 AutoGluon Trained Models
+# AutoGluon Trained Models
 
 This directory contains various trained machine learning models used for the **Smart Budget Allocation System** or related tasks. These models are part of the AutoGluon ensemble, which combines the predictions of multiple models to achieve superior performance.
 

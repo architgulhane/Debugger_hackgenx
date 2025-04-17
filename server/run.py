@@ -7,11 +7,11 @@ from autogluon.tabular import TabularPredictor
 
 app = Flask(__name__)
 
-# === Constants ===
+
 MODEL_DIR = "models"
 ENCODERS_PATH = os.path.join(MODEL_DIR, "label_encoders.pkl")
 
-# === Load Model & Encoders ===
+
 if not os.path.exists(MODEL_DIR):
     raise FileNotFoundError(f"Model directory not found at {MODEL_DIR}. Make sure you've trained and saved the model.")
 
@@ -23,7 +23,7 @@ predictor = TabularPredictor.load(MODEL_DIR)
 with open(ENCODERS_PATH, "rb") as f:
     encoders = pickle.load(f)
 
-# === Encoding Function ===
+
 def encode_input(data):
     encoded = data.copy()
     for col, encoder in encoders.items():
@@ -34,7 +34,7 @@ def encode_input(data):
                 encoded[col] = -1  # Unknown category fallback
     return encoded
 
-# === Reasoning Logic ===
+
 def generate_reasoning(input_data, predicted_budget, expected_budget):
     reasons = []
     diff = predicted_budget - expected_budget
@@ -59,7 +59,7 @@ def generate_reasoning(input_data, predicted_budget, expected_budget):
 
     return reasons
 
-# === Prediction API ===
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -85,7 +85,7 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# === Start Server ===
+
 if __name__ == '__main__':
 =======
 from flask import Flask, request, jsonify
