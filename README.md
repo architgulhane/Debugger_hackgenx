@@ -53,5 +53,6 @@ The Smart Budget Allocation System is a data-driven platform designed to bring i
   <img src="https://github.com/user-attachments/assets/9b8014f2-e2e1-48fc-9b65-a04b06334ad9" alt="Mobile App Screenshot 2" width="250"/>
 </p>
 
-
+#DATASET LINK
+https://drive.google.com/file/d/1ah6M1ll_vJPOBowJgueww3vlHhMtfZfl/view?usp=sharing
 
