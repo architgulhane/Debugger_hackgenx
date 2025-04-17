@@ -35,18 +35,23 @@ The Smart Budget Allocation System is a data-driven platform designed to bring i
 6. Stakeholders can provide feedback, also stored in Firebase  
 
 ---
+## Screenshots of Working Model
 
-## screenshots of working model 
-1.user dashboard 
-<img width="536" alt="Screenshot 2025-04-17 at 9 00 44 AM" src="https://github.com/user-attachments/assets/c3f860b8-bb5d-47d6-8c41-ffe1066b10b1" />
-2.admin dashboard
-![WhatsApp Image 2025-04-16 at 20 52 09](https://github.com/user-attachments/assets/12da38dd-b883-4856-8853-14f73a831ce3)
-3. Mobile app 
-![WhatsApp Image 2025-04-17 at 09 06 41](https://github.com/user-attachments/assets/1cb4e5ac-3f34-4a95-b217-3f35dfaf26fe)
-![WhatsApp Image 2025-04-17 at 09 06 42](https://github.com/user-attachments/assets/9b8014f2-e2e1-48fc-9b65-a04b06334ad9)
+### 1. User Dashboard
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c3f860b8-bb5d-47d6-8c41-ffe1066b10b1" alt="User Dashboard" width="500"/>
+</p>
 
+### 2. Admin Dashboard
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/12da38dd-b883-4856-8853-14f73a831ce3" alt="Admin Dashboard" width="500"/>
+</p>
 
-
+### 3. Mobile App Interface
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/1cb4e5ac-3f34-4a95-b217-3f35dfaf26fe" alt="Mobile App Screenshot 1" width="250"/>
+  <img src="https://github.com/user-attachments/assets/9b8014f2-e2e1-48fc-9b65-a04b06334ad9" alt="Mobile App Screenshot 2" width="250"/>
+</p>
 
 
 
