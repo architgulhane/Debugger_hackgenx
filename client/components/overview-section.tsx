@@ -10,6 +10,7 @@ import { Calendar as CalendarComponent } from "./ui/calendar"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { IndianRupee } from "lucide-react"
 import axios from "axios"
+import LoadingScreen from "./loading"
 
 interface MinistryData {
   Predicted_Allocated_Budget: number
@@ -115,14 +116,7 @@ export function OverviewSection() {
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Budget Dashboard</h1>
-            <p className="text-muted-foreground">Loading budget data...</p>
-          </div>
-        </div>
-      </div>
+      <LoadingScreen/>
     )
   }
 

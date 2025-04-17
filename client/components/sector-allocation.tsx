@@ -9,6 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/t
 import { Badge } from "./ui/badge"
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import LoadingScreen from "./loading"
 
 interface MinistryData {
   id: string
@@ -98,7 +99,7 @@ export function SectorAllocation() {
     }
 
     fetchData()
-  }, [])
+  },[])
 
   const getMinistryName = (code: string): string => {
     const ministries: {[key: string]: string} = {
@@ -187,7 +188,7 @@ export function SectorAllocation() {
   }))
 
   if (loading) {
-    return <div className="p-8 text-center">Loading budget data...</div>
+    return <LoadingScreen/>
   }
 
   if (error) {
