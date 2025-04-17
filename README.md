@@ -1,49 +1,52 @@
 # Smart Budget Allocation System
 
-This project is a smart tool to help predict and manage budget allocations for different government ministries. It uses modern technologies like machine learning, blockchain, Firebase, and mobile apps to make the process smarter and more transparent.
+The Smart Budget Allocation System is a data-driven platform designed to bring intelligence, transparency, and accountability to government budget allocation. It uses machine learning to predict optimal budget amounts for various ministries, integrates Firebase for real-time updates, and stores critical decisions securely on the blockchain.
 
 ---
 
 ## What It Does
 
-- Predicts how much budget a ministry might need based on past data
-- Lets users enter project details through a mobile app
-- Shows results and analytics in a web dashboard
-- Stores final budget decisions securely using blockchain
-- Collects user feedback using Firebase
+- Predicts budget allocation based on historical and contextual data
+- Collects project input details via mobile app and Streamlit dashboard
+- Displays predictions, analytics, and reasoning in a live web dashboard
+- Stores allocation hash using blockchain for immutability and auditability
+- Accepts user feedback, stored securely using Firebase
 
 ---
 
-## Main Technologies
+## Technologies Used
 
-- **Backend**: Python + Flask
-- **Model**: AutoGluon (for predictions)
-- **Mobile App**: React Native
-- **Dashboard**: React
-- **Feedback & Auth**: Firebase
-- **Blockchain**: web3 + Ganache (for secure logs)
-
----
-
-## How It Works
-
-1. User fills project details in the mobile app  
-2. The backend predicts the possible budget  
-3. Prediction is shown in the app and dashboard  
-4. Final decisions are saved on blockchain  
-5. Users can give feedback, stored in Firebase
+- **Backend**: Flask API with Python
+- **Machine Learning**: AutoGluon Tabular model
+- **Realtime Dashboard**: Streamlit
+- **Mobile App**: Built using React Native, integrated with backend and blockchain
+- **Database**: Firebase Realtime Database
+- **Blockchain**: Web3 + Ganache used in the app for storing final budget decisions
 
 ---
 
-## Example Input
+## System Flow
 
-```json
-{
-  "Ministry": "health",
-  "Priority_Level": "high",
-  "Projects_Count": 10,
-  "Region_Impact": "urban",
-  "Dev_Index": 0.75,
-  "Prev_Budget (Cr)": 30000,
-  "GDP_Impact (%)": 4.2
-}
+1. Users enter ministry project details through a mobile app or dashboard  
+2. Flask backend forwards data to the ML model for prediction  
+3. Prediction results, along with reasoning, are stored in Firebase  
+4. Dashboard shows real-time visualizations of inputs and outputs  
+5. Final approval and budget decisions are logged onto the blockchain through the app  
+6. Stakeholders can provide feedback, also stored in Firebase  
+
+---
+
+## screenshots of working model 
+1.user dashboard 
+<img width="536" alt="Screenshot 2025-04-17 at 9 00 44 AM" src="https://github.com/user-attachments/assets/c3f860b8-bb5d-47d6-8c41-ffe1066b10b1" />
+2.admin dashboard
+![WhatsApp Image 2025-04-16 at 20 52 09](https://github.com/user-attachments/assets/12da38dd-b883-4856-8853-14f73a831ce3)
+3. Mobile app 
+![WhatsApp Image 2025-04-17 at 09 06 41](https://github.com/user-attachments/assets/1cb4e5ac-3f34-4a95-b217-3f35dfaf26fe)
+![WhatsApp Image 2025-04-17 at 09 06 42](https://github.com/user-attachments/assets/9b8014f2-e2e1-48fc-9b65-a04b06334ad9)
+
+
+
+
+
+
