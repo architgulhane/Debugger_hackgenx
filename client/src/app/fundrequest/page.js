@@ -3,7 +3,9 @@
 import { DashboardShell } from "../../../components/dashboard-shell";
 import LoadingScreen from '../../../components/loading';
 import { useState } from 'react';
+
 import axios from 'axios';
+
 
 const MINISTRY_CODE_MAP = {
   'Defence': '1',
@@ -43,19 +45,23 @@ const MINISTRY_OPTIONS = [
   'Commerce'
 ];
 
+
 const BUDGET_ALLOCATION_OPTIONS = ['Infrastructure', 'Technology', 'Healthcare', 'Education', 'Defense', 'Agriculture'];
+
 
 export default function ScenariosPage() {
   const [formData, setFormData] = useState({
     ministry: '',
     priority: '',
     regionImpact: '',
+
     description: '',
     budgetAllocation: '',
     amount: '',
     prevBudget: '',
     prevBudgetCr: '',
     developmentIndex: ''
+    description: ''
   });
 
   const handleChange = (e) => {
@@ -92,6 +98,10 @@ export default function ScenariosPage() {
       console.error("Axios Error:", error);
       alert("An error occurred while submitting the request.");
     }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form Data:', formData);
   };
 
   return (
@@ -107,12 +117,17 @@ export default function ScenariosPage() {
         <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-lg shadow-lg">
           <div>
             <label htmlFor="ministry" className="block text-lg font-semibold text-gray-800">Ministry</label>
+
+        <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
+          <div>
+            <label htmlFor="ministry" className="block text-sm font-medium text-gray-700">Ministry</label>
             <select
               id="ministry"
               name="ministry"
               value={formData.ministry}
               onChange={handleChange}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="">Select Ministry</option>
               {MINISTRY_OPTIONS.map((option) => (
@@ -122,13 +137,18 @@ export default function ScenariosPage() {
           </div>
 
           <div>
+
             <label htmlFor="priority" className="block text-lg font-semibold text-gray-800">Priority Level</label>
+
+            <label htmlFor="priority" className="block text-sm font-medium text-gray-700">Priority Level</label>
             <select
               id="priority"
               name="priority"
               value={formData.priority}
               onChange={handleChange}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm"
+
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="">Select Priority</option>
               {PRIORITY_LEVELS.map((level) => (
@@ -139,12 +159,15 @@ export default function ScenariosPage() {
 
           <div>
             <label htmlFor="regionImpact" className="block text-lg font-semibold text-gray-800">Region Impact</label>
+            <label htmlFor="regionImpact" className="block text-sm font-medium text-gray-700">Region Impact</label>
             <select
               id="regionImpact"
               name="regionImpact"
               value={formData.regionImpact}
               onChange={handleChange}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm"
+
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="">Select Region Impact</option>
               {REGION_IMPACT_OPTIONS.map((option) => (
@@ -213,6 +236,8 @@ export default function ScenariosPage() {
 
           <div>
             <label htmlFor="description" className="block text-lg font-semibold text-gray-800">Description</label>
+
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
             <textarea
               id="description"
               name="description"
@@ -220,6 +245,8 @@ export default function ScenariosPage() {
               onChange={handleChange}
               rows={4}
               className="mt-2 block w-full rounded-md border-gray-300 shadow-sm"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+
               placeholder="Provide a brief description of the fund request"
             />
           </div>
@@ -227,10 +254,13 @@ export default function ScenariosPage() {
           <button
             type="submit"
             className="inline-flex justify-center py-2 px-4 border border-transparent shadow-lg text-sm font-medium rounded-md text-white bg-black hover:bg-gray-800 float-right"
+            className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-black bg-black-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Submit Request
           </button>
         </form>
+
+        <LoadingScreen />
       </div>
     </DashboardShell>
   );
