@@ -16,18 +16,18 @@ import { Progress } from "../components/ui/progress"
 const generateTransactionData = () => {
   const sectors = ["Education", "Healthcare", "Infrastructure", "Public Safety", "Social Services", "Environment"]
   const departments = [
-    "Ministry of Education",
-    "Department of Health",
-    "Public Works",
-    "Police Department",
-    "Social Welfare",
-    "Environmental Protection",
-    "School District",
-    "Public Hospital",
-    "Highway Authority",
-    "Emergency Services",
-    "Community Services",
-    "Conservation Department",
+    "Ethereum",
+    "Solana",
+    "Solana Testnet",
+    "Ethereum Sepolia",
+    "Polygon",
+    "Sui",
+    "Monad",
+    "Monad Testnet",
+    "Base",
+    "Ripple",
+    "Cardano",
+    "Binanace",
   ]
   const projects = [
     "School Renovation",
@@ -297,9 +297,9 @@ export function BlockchainLedger() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[100px]">ID</TableHead>
+                      <TableHead className="w-[100px]">SHA256 ID</TableHead>
                       <TableHead>Date</TableHead>
-                      <TableHead>Department</TableHead>
+                      <TableHead>Blockchain</TableHead>
                       <TableHead>Project</TableHead>
                       <TableHead className="text-right">Amount</TableHead>
                       <TableHead>Status</TableHead>
@@ -309,8 +309,8 @@ export function BlockchainLedger() {
                   <TableBody>
                     {filteredTransactions.length > 0 ? (
                       filteredTransactions.map((transaction) => (
-                        <TableRow key={transaction.id}>
-                          <TableCell className="font-medium">{transaction.id}</TableCell>
+                        <TableRow key={crypto.randomUUID()}>
+                          <TableCell className="font-medium">T{Math.floor(Math.random() * 1000)}</TableCell>
                           <TableCell>{transaction.date}</TableCell>
                           <TableCell>{transaction.department}</TableCell>
                           <TableCell>{transaction.project}</TableCell>
