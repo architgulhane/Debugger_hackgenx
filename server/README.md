@@ -1,52 +1,48 @@
-# 🚀 Server – Backend API & ML Model Integration
+# Smart Budget Allocation System
 
-This folder contains the backend logic for the **Smart Budget Allocation System**, including API endpoints, data generation, database integration, and machine learning model handling.
+## Overview
+
+The **Smart Budget Allocation System** is a comprehensive solution designed to optimize and predict budget allocations for various ministries. The system uses machine learning to predict the allocated budgets based on historical data and other relevant factors. This prediction is crucial for ensuring transparency, better resource distribution, and efficient use of public funds.
+
+### Key Features:
+- **Budget Prediction**: Uses machine learning models to predict allocated budgets based on input data.
+- **Data Reasoning**: Provides reasons for predicted budget differences (higher, lower, or matching expected budgets).
+- **Real-time Visualization**: Displays real-time fund allocations and predictions on a user-friendly interface.
 
 ---
 
-## 📁 Directory Structure
+## Technologies Used
 
-### 🧠 `AutogluonModels/ag-20250416_075717/`
-This directory stores AutoGluon model checkpoints or training outputs.  
-**Note:** This should be added to `.gitignore` to prevent large files from being pushed to version control.
+- **Flask**: A lightweight Python framework used to create the backend API for processing requests and predictions.
+- **Streamlit**: A framework for building interactive, real-time web applications with minimal code, used for creating the frontend dashboard.
+- **AutoGluon**: A machine learning framework used for training and predicting on tabular datasets.
+- **Firebase**: A NoSQL database used to store predictions and results in real time.
 
 ---
 
-## 📄 Main Files
+## How the System Works
 
-### 🔧 `app.py`
-- The primary Flask application entry point.
-- Sets up core routes and integrates Firebase.
-- Handles initial GET/POST requests.
+### Backend (Flask API)
+- The backend is built using **Flask**, which exposes a REST API to handle incoming requests and process budget prediction queries.
+- The model used for prediction is built using **AutoGluon** and stored in the server.
+- Firebase is integrated to store and manage prediction results in real time.
 
-### 🔧 `appp.py`
-- Possibly a temporary or alternate version of `app.py`.
-- Used for testing a third model (`model 3 tested`).
-- **Suggestion:** Consider merging or removing duplicates if not needed.
+### Frontend (Streamlit Dashboard)
+- The **Streamlit** dashboard allows users to input relevant data such as ministry, priority level, region impact, and requested budget.
+- After submission, the input data is sent to the backend API, where the prediction is made using the AutoGluon model.
+- The predicted budget allocation and reasoning for the prediction are displayed in real-time on the Streamlit interface.
 
-### 📈 `datagen.py`
-- Generates synthetic or sample budget data.
-- Useful for training or testing the ML models when real data is unavailable.
+### Machine Learning Model (AutoGluon)
+- The **AutoGluon** model is trained on historical data of budget allocations. The model uses various features like ministry, region impact, priority, and requested amount to predict the allocated budget.
+- The trained model is stored in a specific directory and loaded when the Flask API is called.
 
-### 🔗 `db.py`
-- Firebase database configuration and integration.
-- Includes functions for interacting with Firestore/Realtime DB.
+---
 
-### 🔄 `route.py`
-- Manages specific API endpoints.
-- Modular approach to separate routing logic from the main app.
+## Setting Up the System
 
-### ▶️ `run.py`
-- Starts the Flask server.
-- Commonly used during development to boot up the backend quickly.
+### Prerequisites
+1. Python 3.8 or higher
+2. Install the necessary dependencies by running:
 
-🔧 How to Run
-bash
-Copy
-Edit
-# Step 1: Install dependencies
-pip install -r requirement.txt
-
-# Step 2: Start the server
-python run.py
-The server should now be running locally on http://localhost:5000.
+   ```bash
+   pip install -r requirements.txt
