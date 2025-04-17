@@ -9,39 +9,100 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Calendar as CalendarComponent } from "./ui/calendar"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { IndianRupee } from "lucide-react"
+import axios from "axios"
+
+interface MinistryData {
+  Predicted_Allocated_Budget: number
+  Reason: string
+  input: {
+    Dev_Index: number
+    "GDP_Impact (%)": number
+    Ministry: string
+    "Prev_Budget (Cr)": number
+    Priority_Level: string
+    Projects_Count: number
+    Region_Impact: string
+    expected_budget: number
+  }
+}
+
+interface PredictionsData {
+  [key: string]: MinistryData
+}
 
 export function OverviewSection() {
-  const [totalBudget, setTotalBudget] = useState(24500000)
-  const [allocatedBudget, setAllocatedBudget] = useState(18300000)
-  const [efficiencyScore, setEfficiencyScore] = useState(87.3)
-  const [utilizationRate, setUtilizationRate] = useState(74.7)
+  const [totalBudget, setTotalBudget] = useState(0)
+  const [allocatedBudget, setAllocatedBudget] = useState(0)
+  const [efficiencyScore, setEfficiencyScore] = useState(0)
+  const [utilizationRate, setUtilizationRate] = useState(0)
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [showAlert, setShowAlert] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAllocatedBudget((prev) => {
-        const change = Math.random() * 50000 - 25000
-        return Math.min(totalBudget, Math.max(0, prev + change))
-      })
-
-      setEfficiencyScore((prev) => {
-        const change = Math.random() * 0.4 - 0.2
-        return Math.min(100, Math.max(0, prev + change))
-      })
-
-      setUtilizationRate((prev) => {
-        const newRate = (allocatedBudget / totalBudget) * 100
-        return Number.parseFloat(newRate.toFixed(1))
-      })
-
-      if (0) {
-        setShowAlert(true)
-        setTimeout(() => setShowAlert(false), 5000)
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://127.0.0.1:5001/get-all-data")
+        const data = response.data.predictions
+        
+        if (data && typeof data === 'object') {
+          // Calculate total expected budget and allocated budget from the ministries
+          let totalExpected = 0
+          let totalAllocated = 0
+          
+          Object.values(data).forEach((ministry: MinistryData) => {
+            totalExpected += ministry.input.expected_budget
+            totalAllocated += ministry.Predicted_Allocated_Budget
+          })
+          
+          setTotalBudget(totalExpected)
+          setAllocatedBudget(totalAllocated)
+          
+          // Calculate efficiency score based on ministry data
+          let totalVariance = 0
+          let count = 0
+          
+          Object.values(data).forEach((ministry: MinistryData) => {
+            const expectedBudget = ministry.input.expected_budget
+            const allocatedBudget = ministry.Predicted_Allocated_Budget
+            
+            // Calculate variance as percentage difference from expected
+            if (expectedBudget > 0) {
+              const variance = Math.abs((allocatedBudget - expectedBudget) / expectedBudget)
+              totalVariance += variance
+              count++
+            }
+          })
+          
+          if (count > 0) {
+            // Convert variance to efficiency score (lower variance = higher efficiency)
+            const avgVariance = totalVariance / count
+            const score = 100 - (avgVariance * 100)
+            setEfficiencyScore(Math.min(100, Math.max(0, score)))
+          } else {
+            setEfficiencyScore(85)
+          }
+          
+          setLoading(false)
+        } else {
+          throw new Error("Invalid data format received from API")
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch data")
+        setLoading(false)
       }
-    }, 3000)
+    }
 
-    return () => clearInterval(interval)
+    fetchData()
+  }, [])
+
+  // Update utilization rate whenever allocatedBudget or totalBudget changes
+  useEffect(() => {
+    if (totalBudget > 0) {
+      const newRate = (allocatedBudget / totalBudget) * 100
+      setUtilizationRate(Number.parseFloat(newRate.toFixed(1)))
+    }
   }, [allocatedBudget, totalBudget])
 
   const formatCurrency = (amount: number) => {
@@ -50,6 +111,32 @@ export function OverviewSection() {
       currency: "INR",
       maximumFractionDigits: 0,
     }).format(amount)
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Budget Dashboard</h1>
+            <p className="text-muted-foreground">Loading budget data...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Budget Dashboard</h1>
+            <p className="text-red-500">Error: {error}</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -71,6 +158,9 @@ export function OverviewSection() {
               <CalendarComponent mode="single" selected={date} onSelect={setDate} initialFocus />
             </PopoverContent>
           </Popover>
+          <Button variant="outline" size="icon">
+            <Download className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -79,7 +169,7 @@ export function OverviewSection() {
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Anomaly Detected</AlertTitle>
           <AlertDescription>
-            Unusual spending pattern detected in Healthcare sector. Review recommended.
+            Unusual spending pattern detected. Review recommended.
           </AlertDescription>
         </Alert>
       )}
