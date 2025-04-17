@@ -1,6 +1,121 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Platform, Modal, FlatList, Alert, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import blockchain from '../utils/Blockchain';
+
+const PREDICTION_DATA = {
+  predictions: {
+    "-ONzs2fk7JCTl725OFRJ": {
+      "Predicted_Allocated_Budget": 60170.87890625,
+      "Reason": "Lower than expected possibly due to low priority or overallocation elsewhere.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "1",
+        "Prev_Budget (Cr)": 23000,
+        "Priority_Level": "0",
+        "Projects_Count": 10,
+        "Region_Impact": "1",
+        "expected_budget": 1000000
+      }
+    },
+    "-ONztOqljJbAP58lAqf6": {
+      "Predicted_Allocated_Budget": 61931.1015625,
+      "Reason": "Lower than expected possibly due to low priority or overallocation elsewhere.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "1",
+        "Prev_Budget (Cr)": 23000,
+        "Priority_Level": "09",
+        "Projects_Count": 10,
+        "Region_Impact": "1",
+        "expected_budget": 10324000
+      }
+    },
+    "-ONztRQGUwF3kjmqDl_p": {
+      "Predicted_Allocated_Budget": 192892.28125,
+      "Reason": "Lower than expected possibly due to low priority or overallocation elsewhere.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "9",
+        "Prev_Budget (Cr)": 2302300,
+        "Priority_Level": "09",
+        "Projects_Count": 10,
+        "Region_Impact": "1",
+        "expected_budget": 324000
+      }
+    },
+    "-ONztdFgKKTGA6urEp6s": {
+      "Predicted_Allocated_Budget": 192890.578125,
+      "Reason": "Lower than expected possibly due to low priority or overallocation elsewhere.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "2",
+        "Prev_Budget (Cr)": 2302300,
+        "Priority_Level": "7",
+        "Projects_Count": 10,
+        "Region_Impact": "3",
+        "expected_budget": 324000
+      }
+    },
+    "-ONztet1nq3JseMRCvUO": {
+      "Predicted_Allocated_Budget": 154958.03125,
+      "Reason": "Higher than expected due to high development index, priority, or ministry demand.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "2",
+        "Prev_Budget (Cr)": 2302300,
+        "Priority_Level": "7",
+        "Projects_Count": 10,
+        "Region_Impact": "3",
+        "expected_budget": 3200
+      }
+    },
+    "-ONztiPXaTTY7_HEGQaN": {
+      "Predicted_Allocated_Budget": 13663.826171875,
+      "Reason": "Higher than expected due to high development index, priority, or ministry demand.",
+      "input": {
+        "Dev_Index": 0,
+        "GDP_Impact (%)": 34,
+        "Ministry": "2",
+        "Prev_Budget (Cr)": 2300,
+        "Priority_Level": "7",
+        "Projects_Count": 10,
+        "Region_Impact": "3",
+        "expected_budget": 3200
+      }
+    }
+  }
+};
+
+const MINISTRY_CODE_MAP: Record<string, string> = {
+  'Defence': '1',
+  'Finance': '2',
+  'Home Affairs': '3',
+  'Education': '4',
+  'Health': '5',
+  'Agriculture': '6',
+  'Railways': '7',
+  'Commerce': '9'
+};
+
+const PRIORITY_LEVEL_MAP: Record<string, string> = {
+  'High': '0',
+  'Medium': '5',
+  'Low': '9'
+};
+
+const REGION_IMPACT_MAP: Record<string, string> = {
+  'Local': '0',
+  'State': '1',
+  'Regional': '2',
+  'National': '3',
+  'International': '4'
+};
 
 const PRIORITY_LEVELS = ['High', 'Medium', 'Low'];
 const REGION_IMPACT_OPTIONS = ['Local', 'State', 'Regional', 'National', 'International'];
@@ -15,12 +130,23 @@ const MINISTRY_OPTIONS = [
   'Commerce'
 ];
 
+const API_CONFIG = {
+  baseUrl: Platform.select({
+    ios: 'http://localhost:5001',
+    android: 'http://172.26.25.107:5001',
+    default: 'http://localhost:5001'
+  }),
+  endpoints: {
+    insertBudget: '/insert'
+  }
+};
+
 const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   const [formData, setFormData] = useState({
     Ministry: 'Defence',
-    Priority_Level: 'low',
+    Priority_Level: 'Low',
     Projects_Count: '15',
-    Region_Impact: 'national',
+    Region_Impact: 'National',
     Dev_Index: '0.45',
     expected_budget: '200',
     Prev_Budget: '52000',
@@ -32,6 +158,89 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     name: '',
     options: [] as string[],
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [predictionResult, setPredictionResult] = useState<{
+    budget: number | null,
+    reason: string | null
+  }>({
+    budget: null,
+    reason: null
+  });
+  const [showPrediction, setShowPrediction] = useState(false);
+
+    type Prediction = {
+      Predicted_Allocated_Budget: number;
+      Reason: string;
+      input: {
+        Dev_Index: number;
+        "GDP_Impact (%)": number;
+        Ministry: string;
+        "Prev_Budget (Cr)": number;
+        Priority_Level: string;
+        Projects_Count: number;
+        Region_Impact: string;
+        expected_budget: number;
+      }
+    };
+  
+    const findSimilarPrediction = (): Prediction | null => {
+      const ministryCode = MINISTRY_CODE_MAP[formData.Ministry] || '1';
+      const priorityCode = PRIORITY_LEVEL_MAP[formData.Priority_Level] || '9';
+      const regionCode = REGION_IMPACT_MAP[formData.Region_Impact] || '3';
+      const projectsCount = parseInt(formData.Projects_Count) || 10;
+      const expectedBudget = parseInt(formData.expected_budget) || 200;
+      const prevBudget = parseInt(formData.Prev_Budget) || 52000;
+      const gdpImpact = parseFloat(formData.GDP_Impact) || 2.3;
+      const devIndex = parseFloat(formData.Dev_Index) || 0.45;
+  
+      let bestMatch: Prediction | null = null;
+      let highestScore = -1;
+
+    Object.entries(PREDICTION_DATA.predictions).forEach(([key, prediction]) => {
+      let score = 0;
+      
+      if (prediction.input.Ministry === ministryCode) {
+        score += 5;
+      }
+      
+      if (prediction.input.Priority_Level === priorityCode) {
+        score += 3;
+      }
+      
+      if (prediction.input.Region_Impact === regionCode) {
+        score += 2;
+      }
+      
+      const projectsDiff = Math.abs(prediction.input.Projects_Count - projectsCount) / 20;
+      score += (1 - Math.min(projectsDiff, 1));
+
+      const budgetDiff = Math.abs(prediction.input.expected_budget - expectedBudget) / 1000000;
+      score += (1 - Math.min(budgetDiff, 1));
+
+      if (score > highestScore) {
+        highestScore = score;
+        bestMatch = prediction;
+      }
+    });
+
+    return bestMatch;
+  };
+
+  useEffect(() => {
+    const prediction = findSimilarPrediction();
+    if (prediction) {
+      setPredictionResult({
+        budget: prediction.Predicted_Allocated_Budget,
+        reason: prediction.Reason
+      });
+    } else {
+      setPredictionResult({
+        budget: null,
+        reason: null
+      });
+    }
+  }, [formData]);
 
   const handleChange = (name: string, value: string) => {
     setFormData({
@@ -40,10 +249,84 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     });
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    alert('Budget form submitted successfully!');
-    navigateTo('Home');
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    
+    try {
+      console.log('Form submitted:', formData);
+      
+ 
+      const budgetAmount = `₹${parseInt(formData.expected_budget).toLocaleString('en-IN')} Cr`;
+      const transactionTitle = `${formData.Ministry} Budget Allocation`;
+      const transactionDescription = `Priority: ${formData.Priority_Level}, Region: ${formData.Region_Impact}, Projects: ${formData.Projects_Count}`;
+      
+      // Use a Promise with timeout to prevent the UI from freezing
+      const addTransactionWithTimeout = () => {
+        return new Promise<string>((resolve, reject) => {
+          // Set a timeout to abort if it takes too long
+          const timeoutId = setTimeout(() => {
+            reject(new Error("Transaction processing timed out"));
+          }, 10000); // 10 second timeout
+          
+          // Attempt to add the transaction
+          blockchain.addTransaction({
+            title: transactionTitle,
+            description: transactionDescription,
+            amount: budgetAmount,
+            type: 'approval',
+            fromAccount: 'Treasury',
+            toAccount: formData.Ministry
+          })
+          .then(txId => {
+            clearTimeout(timeoutId);
+            resolve(txId);
+          })
+          .catch(error => {
+            clearTimeout(timeoutId);
+            reject(error);
+          });
+        });
+      };
+      
+      // Execute the transaction with the timeout wrapper
+      const txId = await addTransactionWithTimeout();
+      
+      // Show success message with prediction information
+      Alert.alert(
+        "Transaction Recorded",
+        `Budget request has been submitted and secured on the blockchain.\n\nPredicted allocation: ₹${predictionResult.budget ? Math.round(predictionResult.budget).toLocaleString('en-IN') : 'N/A'} Cr`,
+        [
+          { 
+            text: "View Ledger", 
+            onPress: () => navigateTo('Ledger') 
+          },
+          { 
+            text: "Go to Dashboard", 
+            onPress: () => navigateTo('Home') 
+          }
+        ]
+      );
+      
+      // Reset form data after successful submission
+      setFormData({
+        Ministry: 'Defence',
+        Priority_Level: 'Low',
+        Projects_Count: '15',
+        Region_Impact: 'National',
+        Dev_Index: '0.45',
+        expected_budget: '200',
+        Prev_Budget: '52000',
+        GDP_Impact: '2.3'
+      });
+      
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setErrorMessage("Failed to submit budget request. Please try again.");
+      Alert.alert('Error', 'Failed to submit budget request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const openDropdown = (name: string, options: string[]) => {
@@ -68,13 +351,13 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
     options: string[] 
   }) => {
     return (
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>{label}</Text>
+      <View className="mb-5">
+        <Text className="text-sm font-medium text-slate-800 mb-2">{label}</Text>
         <TouchableOpacity 
-          style={styles.dropdownSelector} 
+          className="bg-white border border-slate-300 rounded-lg p-3 flex-row justify-between items-center"
           onPress={() => openDropdown(name, options)}
         >
-          <Text style={styles.dropdownText}>{value}</Text>
+          <Text className="text-base text-slate-800">{value}</Text>
           <Icon name="arrow-drop-down" size={24} color="#64748b" />
         </TouchableOpacity>
       </View>
@@ -82,11 +365,11 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.content}>
-        <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Budget Allocation Form</Text>
-          <Text style={styles.formSubtitle}>Fill in the details for budget allocation</Text>
+    <View className="flex-1 bg-slate-50 justify-between">
+      <ScrollView className="flex-1">
+        <View className="p-5">
+          <Text className="text-2xl font-bold text-slate-800 mb-2 text-center">Budget Buddy</Text>
+          <Text className="text-base text-slate-500 mb-6 text-center">Fill in the details for budget allocation</Text>
 
           {/* Ministry Dropdown */}
           <CustomDropdown
@@ -105,10 +388,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           />
 
           {/* Projects Count Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Number of Projects</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Number of Projects</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Projects_Count}
               onChangeText={(value) => handleChange('Projects_Count', value)}
               keyboardType="numeric"
@@ -125,10 +408,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           />
 
           {/* Development Index Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Development Index (0-1)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Development Index (0-1)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Dev_Index}
               onChangeText={(value) => handleChange('Dev_Index', value)}
               keyboardType="decimal-pad"
@@ -137,10 +420,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* Expected Budget Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Expected Budget (Cr)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Expected Budget (Cr)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.expected_budget}
               onChangeText={(value) => handleChange('expected_budget', value)}
               keyboardType="numeric"
@@ -149,10 +432,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* Previous Budget Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Previous Budget (Cr)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">Previous Budget (Cr)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.Prev_Budget}
               onChangeText={(value) => handleChange('Prev_Budget', value)}
               keyboardType="numeric"
@@ -161,10 +444,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
           </View>
 
           {/* GDP Impact Input */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>GDP Impact (%)</Text>
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-slate-800 mb-2">GDP Impact (%)</Text>
             <TextInput
-              style={styles.input}
+              className="bg-white border border-slate-300 rounded-lg p-3 text-base text-slate-800"
               value={formData.GDP_Impact}
               onChangeText={(value) => handleChange('GDP_Impact', value)}
               keyboardType="decimal-pad"
@@ -172,13 +455,44 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
             />
           </View>
 
+          {/* Blockchain Info */}
+          <View className="bg-blue-50 rounded-lg p-3 mb-4 flex-row items-center">
+            <Icon name="verified" size={20} color="#3b82f6" />
+            <Text className="text-sm text-slate-700 ml-2">
+              This budget request will be secured on the blockchain for transparency and immutability
+            </Text>
+          </View>
+
+          {/* Prediction Info */}
+          {showPrediction && predictionResult.budget !== null && (
+            <View className="bg-green-50 rounded-lg p-3 mb-4">
+              <Text className="text-sm text-green-700">
+                Predicted Allocation: ₹{Math.round(predictionResult.budget).toLocaleString('en-IN')} Cr
+              </Text>
+              <Text className="text-xs text-green-600 mt-1">
+                Reason: {predictionResult.reason}
+              </Text>
+            </View>
+          )}
+
           {/* Submit Button */}
           <TouchableOpacity
-            style={styles.submitButton}
+            className="bg-blue-500 rounded-lg p-4 items-center mt-3"
             onPress={handleSubmit}
+            disabled={isSubmitting}
           >
-            <Text style={styles.submitButtonText}>Submit Budget Request</Text>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text className="text-white text-base font-semibold">Submit Budget Request</Text>
+            )}
           </TouchableOpacity>
+
+          {errorMessage && (
+            <View className="mt-4">
+              <Text className="text-red-500 text-sm">{errorMessage}</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
       
@@ -189,10 +503,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select {currentDropdown.name.replace('_', ' ')}</Text>
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="bg-white rounded-t-2xl pb-5 max-h-[70%]">
+            <View className="flex-row justify-between items-center p-4 border-b border-slate-200">
+              <Text className="text-lg font-semibold text-slate-800">Select {currentDropdown.name.replace('_', ' ')}</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Icon name="close" size={24} color="#64748b" />
               </TouchableOpacity>
@@ -202,10 +516,10 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
               keyExtractor={(item) => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  style={styles.dropdownItem}
+                  className="flex-row justify-between items-center p-4 border-b border-slate-200"
                   onPress={() => selectItem(item)}
                 >
-                  <Text style={styles.dropdownItemText}>{item}</Text>
+                  <Text className="text-base text-slate-800">{item}</Text>
                   {formData[currentDropdown.name as keyof typeof formData] === item && (
                     <Icon name="check" size={20} color="#3b82f6" />
                   )}
@@ -216,158 +530,41 @@ const Entry = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
         </View>
       </Modal>
       
-      <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigateTo('Home')} style={styles.navItem}>
-          <Icon name="home" size={24} color="#000" />
-          <Text style={styles.navText}>Home</Text>
+      <View className="flex-row justify-around items-center p-3 border-t border-slate-200 bg-white">
+        <TouchableOpacity 
+          className="items-center" 
+          onPress={() => navigateTo('Home')}
+        >
+          <Icon name="dashboard" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Dashboard</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Visualization')} style={styles.navItem}>
-          <Icon name="bar-chart" size={24} color="#000" />
-          <Text style={styles.navText}>Visualization</Text>
+        
+        <TouchableOpacity 
+          className="items-center" 
+          onPress={() => navigateTo('Visualization')}
+        >
+          <Icon name="bar-chart" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Analysis</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo('Ledger')} style={styles.navItem}>
-          <Icon name="book" size={24} color="#000" />
-          <Text style={styles.navText}>Ledger</Text>
+        
+        <TouchableOpacity 
+          className="items-center" 
+          onPress={() => navigateTo('Ledger')}
+        >
+          <Icon name="book" size={24} color="#64748b" />
+          <Text className="text-xs mt-1 text-slate-500">Ledger</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.navItem, styles.navItemActive]}>
+        
+        <TouchableOpacity 
+          className="items-center" 
+          onPress={() => setShowPrediction(!showPrediction)}
+        >
           <Icon name="edit" size={24} color="#3b82f6" />
-          <Text style={[styles.navText, styles.navTextActive]}>Entry</Text>
+          <Text className="text-xs mt-1 text-blue-500 font-medium">Adjust</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f7fa',
-    justifyContent: 'space-between',
-  },
-  content: {
-    flex: 1,
-  },
-  formContainer: {
-    padding: 20,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a2b4b',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  formSubtitle: {
-    fontSize: 16,
-    color: '#64748b',
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1a2b4b',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  dropdownSelector: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-    borderRadius: 8,
-    padding: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dropdownText: {
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    paddingBottom: 20,
-    maxHeight: '70%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a2b4b',
-  },
-  dropdownItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  dropdownItemText: {
-    fontSize: 16,
-    color: '#1a2b4b',
-  },
-  submitButton: {
-    backgroundColor: '#3b82f6',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: '#e2e8f0',
-    backgroundColor: '#fff',
-  },
-  navItem: {
-    alignItems: 'center',
-  },
-  navItemActive: {
-    
-  },
-  navText: {
-    fontSize: 12,
-    marginTop: 4,
-    color: '#64748b',
-  },
-  navTextActive: {
-    color: '#3b82f6',
-    fontWeight: '500',
-  },
-});
 
 export default Entry;
