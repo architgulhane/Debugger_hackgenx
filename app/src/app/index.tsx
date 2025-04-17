@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import SignIn from "../components/SIgnIn";
 import Register from "../components/Register";
-import Home from './Home';
+import Home, * as HomeModule from './Home';
 import Visualization from './Visualization'; 
 import Ledger from './Ledger';
 import Entry from './Entry';
+import BlockchainLedger from './BlockchainLedger';
 import AdminHome from './AdminHome';
 import AdminVisualization from './AdminVisualization';
 import AdminLedger from './AdminLedger';
@@ -29,6 +30,7 @@ export default function Index() {
       {currentScreen === 'Visualization' && <Visualization navigateTo={navigateTo} />}
       {currentScreen === 'Ledger' && <Ledger navigateTo={navigateTo} />} 
       {currentScreen === 'Entry' && <Entry navigateTo={navigateTo} />}
+      {currentScreen === 'BlockchainLedger' && <BlockchainLedger navigateTo={navigateTo} />}
       
       {/* Admin Screens */}
       {currentScreen === 'AdminHome' && <AdminHome navigateTo={navigateTo} />}

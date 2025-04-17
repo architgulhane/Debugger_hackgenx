@@ -14,7 +14,6 @@ const SignIn = ({ navigateTo }: { navigateTo: (screen: string) => void }) => {
       return;
     }
     
-    // Hard-coded user validation
     if (userType === 'admin') {
       if (username === 'admin' && password === '1234') {
         navigateTo('AdminHome');
